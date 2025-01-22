@@ -1,24 +1,24 @@
 'use strict';
 
-const handleError = (err) => {
-	if (err) {
-		return alert.error(err);
-	}
-	ajaxify.refresh();
+const createACPModule = (alert, ajaxify, socket, $) => {
+	const handleError = (err) => {
+		if (err) {
+			return alert.error(err);
+		}
+		ajaxify.refresh();
+	};
+	const ACP = {
+		init: () => {
+			$('#clear-search-history').on('click', () => {
+				bootbox.confirm('[[admin/dashboard:clear-search-history-confirm]]', function (ok) {
+					if (ok) {
+						socket.emit('admin.clearSearchHistory', handleError);
+					}
+				});
+			});
+		},
+	};
+	return { handleError, ACP };
 };
 
-define('admin/dashboard/searches', ['alerts', 'bootbox'], (alerts, bootbox) => {
-	const ACP = {};
-
-	ACP.init = () => {
-		$('#clear-search-history').on('click', () => {
-			bootbox.confirm('[[admin/dashboard:clear-search-history-confirm]]', function (ok) {
-				if (ok) {
-					socket.emit('admin.clearSearchHistory', handleError);
-				}
-			});
-		});
-	};
-
-	return ACP;
-});
+module.exports = createACPModule;
